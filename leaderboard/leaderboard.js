@@ -11,4 +11,22 @@
  */
 PlayersList = new Mongo.Collection('players');
 
-//PlayersList.insert();
+if( Meteor.isClient )
+{
+    console.log("hello client");
+
+    Template.leaderboard.helpers({
+        'player': function()
+        {
+            return PlayersList.find();
+        },
+        'otherHelper': function()
+        {
+            return "other helper text";
+        }
+    });
+}
+else if ( Meteor.isServer )
+{
+    console.log("hello server");
+}
