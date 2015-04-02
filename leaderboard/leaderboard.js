@@ -25,6 +25,13 @@ if( Meteor.isClient )
             return "other helper text";
         }
     });
+
+    Template.leaderboard.events({
+        'click .player': function()
+        {
+            console.log("you clicked a player");
+        }
+    });
 }
 else if ( Meteor.isServer )
 {
