@@ -8,11 +8,11 @@
 /**
  * MongoDB
  */
-PlayersList = new Mongo.Collection('players');
+PlayersList = new Mongo.Collection( 'players' );
 
 if( Meteor.isClient )
 {
-    console.log("hello client");
+    console.log( "hello client" );
 
     Template.leaderboard.helpers({
         'player': function()
@@ -22,14 +22,14 @@ if( Meteor.isClient )
         'selectedClass': function()
         {
             var playerId = this._id;
-            var selectedPlayer = Session.get('selectedPlayer');
+            var selectedPlayer = Session.get( 'selectedPlayer' );
             if ( playerId == selectedPlayer ) {
                 return "selected";
             }
         },
         'showSelectedPlayer': function()
         {
-            var selectedPlayer = Session.get('selectedPlayer');
+            var selectedPlayer = Session.get( 'selectedPlayer' );
             return PlayersList.findOne( selectedPlayer );
         }
     });
@@ -38,27 +38,51 @@ if( Meteor.isClient )
         'click .player': function()
         {
             var playerId = this._id;
-            Session.set('selectedPlayer', playerId);
+            Session.set( 'selectedPlayer', playerId );
         },
         'click .increment': function()
         {
-            var selectedPlayer = Session.get('selectedPlayer');
-            if ( selectedPlayer != null )
+            var selectedPlayer = Session.get( 'selectedPlayer' );
+            if( selectedPlayer != null )
             {
                 PlayersList.update( selectedPlayer, {$inc: {score: 5} });
             }
         },
         'click .decrement': function()
         {
-            var selectedPlayer = Session.get('selectedPlayer');
-            if ( selectedPlayer != null )
+            var selectedPlayer = Session.get( 'selectedPlayer' );
+            if( selectedPlayer != null )
             {
                 PlayersList.update( selectedPlayer, {$inc: {score: -5} });
             }
+        },
+        'click .remove': function()
+        {
+            var selectedPlayer = Session.get( 'selectedPlayer' );
+            if( selectedPlayer != null )
+            {
+                PlayersList.remove( selectedPlayer );
+            }
+        }
+    });
+
+    Template.addPlayerForm.events({
+        'submit form': function( event )
+        {
+            event.preventDefault();
+            //console.log( event.type );
+
+            var playerNameVar = event.target.playerName.value;
+            console.log( playerNameVar );
+
+            PlayersList.insert({
+                name: playerNameVar,
+                score: 0
+            });
         }
     });
 }
 else if ( Meteor.isServer )
 {
-    console.log("hello server");
+    console.log( "hello server" );
 }
