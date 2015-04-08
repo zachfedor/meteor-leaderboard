@@ -17,7 +17,12 @@ if( Meteor.isClient )
     Template.leaderboard.helpers({
         'player': function()
         {
-            return PlayersList.find( {}, {sort: {score: -1, name: 1} });
+            var currentUserId = Meteor.userId();
+
+            return PlayersList.find({ 
+                createdBy: currentUserId },
+                {sort: {score: -1, name: 1}
+            });
         },
         'selectedClass': function()
         {
@@ -88,9 +93,12 @@ if( Meteor.isClient )
                 playerScoreVar = 0;
             }
 
+            var currentUserId = Meteor.userId();
+
             PlayersList.insert({
                 name: playerNameVar,
-                score: playerScoreVar
+                score: playerScoreVar,
+                createdBy: currentUserId
             });
 
             event.target.playerName.value = '';
