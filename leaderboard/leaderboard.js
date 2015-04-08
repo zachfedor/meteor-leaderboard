@@ -61,7 +61,11 @@ if( Meteor.isClient )
             var selectedPlayer = Session.get( 'selectedPlayer' );
             if( selectedPlayer != null )
             {
-                PlayersList.remove( selectedPlayer );
+                var playerName = PlayersList.findOne( selectedPlayer ).name;
+                if( confirm( "Do you really want to delete " + playerName + "?" ))
+                {
+                    PlayersList.remove( selectedPlayer );
+                }
             }
         }
     });
@@ -73,12 +77,24 @@ if( Meteor.isClient )
             //console.log( event.type );
 
             var playerNameVar = event.target.playerName.value;
-            console.log( playerNameVar );
+
+            var playerScoreVar = event.target.playerScore.value;
+            if( playerScoreVar % 1 === 0 )
+            {
+                playerScoreVar = parseInt( playerScoreVar, 10 );
+            }
+            else
+            {
+                playerScoreVar = 0;
+            }
 
             PlayersList.insert({
                 name: playerNameVar,
-                score: 0
+                score: playerScoreVar
             });
+
+            event.target.playerName.value = '';
+            event.target.playerScore.value = '';
         }
     });
 }
