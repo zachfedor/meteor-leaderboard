@@ -45,18 +45,12 @@ if( Meteor.isClient )
         'click .increment': function()
         {
             var selectedPlayer = Session.get( 'selectedPlayer' );
-            if( selectedPlayer != null )
-            {
-                PlayersList.update( selectedPlayer, {$inc: {score: 5} });
-            }
+            Meteor.call( 'modifyPlayerScore', selectedPlayer, 5 );
         },
         'click .decrement': function()
         {
             var selectedPlayer = Session.get( 'selectedPlayer' );
-            if( selectedPlayer != null )
-            {
-                PlayersList.update( selectedPlayer, {$inc: {score: -5} });
-            }
+            Meteor.call( 'modifyPlayerScore', selectedPlayer, -5 );
         },
         'click .remove': function()
         {
@@ -66,7 +60,7 @@ if( Meteor.isClient )
                 var playerName = PlayersList.findOne( selectedPlayer ).name;
                 if( confirm( "Do you really want to delete " + playerName + "?" ))
                 {
-                    PlayersList.remove( selectedPlayer );
+                    Meteor.call( 'removePlayerData', selectedPlayer );
                 }
             }
         }
@@ -90,13 +84,7 @@ if( Meteor.isClient )
                 playerScoreVar = 0;
             }
 
-            var currentUserId = Meteor.userId();
-
-            PlayersList.insert({
-                name: playerNameVar,
-                score: playerScoreVar,
-                createdBy: currentUserId
-            });
+            Meteor.call( 'insertPlayerData', playerNameVar, playerScoreVar );
 
             event.target.playerName.value = '';
             event.target.playerScore.value = '';
@@ -115,5 +103,26 @@ else if ( Meteor.isServer )
     {
         var currentUserId = this.userId;
         return PlayersList.find({ createdBy: currentUserId })
+    });
+
+    Meteor.methods({
+        'insertPlayerData': function( playerNameVar, playerScoreVar ) {
+            var currentUserId = Meteor.userId();
+
+            PlayersList.insert({
+                name: playerNameVar,
+                score: playerScoreVar,
+                createdBy: currentUserId
+            });
+        },
+        'removePlayerData': function( selectedPlayer  ) {
+            PlayersList.remove( selectedPlayer );
+        },
+        'modifyPlayerScore': function( selectedPlayer, scoreValue ) {
+            if( selectedPlayer != null )
+            {
+                PlayersList.update( selectedPlayer, {$inc: {score: scoreValue} });
+            }
+        }
     });
 }
